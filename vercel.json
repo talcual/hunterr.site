@@ -1,6 +1,6 @@
 {
-  "buildCommand": "npm run build:web",
-  "outputDirectory": "apps/web/dist",
-  "installCommand": "npm install --include=dev",
+  "buildCommand": "bash apps/web/build.sh",
+  "outputDirectory": "dist",
+  "installCommand": "bash apps/web/install.sh",
   "framework": null
 }
