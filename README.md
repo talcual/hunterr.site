@@ -59,18 +59,20 @@ hunterrd/
 
 ## Despliegue en Vercel (frontend)
 
-Vercel detecta Vite automáticamente. Configura el proyecto:
+**Importante**: configura **un solo proyecto en Vercel** apuntando al frontend. Si ya tienes un segundo proyecto que apunta a la raíz del repo, **bórralo** — la API NestJS no se deploya en Vercel.
+
+Configuración del proyecto frontend en Vercel:
 
 - **Root Directory**: `apps/web`
-- **Framework Preset**: Other (o Vite)
-- **Build Command**: `npm run build` (deja el default)
-- **Output Directory**: `dist`
-- **Install Command**: `npm install`
+- **Framework Preset**: Vite (lo auto-detecta con el `vercel.json` que está en `apps/web`)
+- **Build Command**: dejar vacío (lo detecta)
+- **Output Directory**: dejar vacío (lo detecta)
+- **Install Command**: dejar vacío
 
 Variables de entorno:
-- `VITE_API_BASE_URL` = `https://<tu-api>.onrender.com/api/v1` (la URL del backend)
+- `VITE_API_BASE_URL` = `https://<tu-api>.onrender.com/api/v1` (la URL del backend desplegado en Railway/Render/Fly.io)
 
-> La API NestJS no se despliega en Vercel; usa Railway, Render, Fly.io, etc. y expone `DATABASE_URL` + `JWT_SECRET`. En el backend, configura `CORS_ORIGIN` con el dominio de Vercel (ej. `https://hunterrd.vercel.app`).
+> En el backend, configura `CORS_ORIGIN` con el dominio de Vercel (ej. `https://hunterrd.vercel.app`) y `NODE_ENV=production` para que las cookies se marquen `Secure`.
 
 ## Scripts útiles
 
