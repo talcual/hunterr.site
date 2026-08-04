@@ -1,4 +1,0 @@
-{
-  "$schema": "https://openapi.vercel.sh/vercel.json",
-  "ignoreCommand": "echo 'Use apps/web/vercel.json for the frontend project'"
-}

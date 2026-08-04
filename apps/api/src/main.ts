@@ -1,10 +1,17 @@
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { ConfigService } from '@nestjs/config';
+import type { NestExpressApplication } from '@nestjs/platform-express';
 import { AppModule } from './app.module';
 
-async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+let cachedApp: NestExpressApplication | null = null;
+
+export async function createApp(): Promise<NestExpressApplication> {
+  if (cachedApp) return cachedApp;
+
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
+    logger: ['error', 'warn', 'log'],
+  });
   const config = app.get(ConfigService);
 
   app.setGlobalPrefix(config.get<string>('API_PREFIX') ?? 'api/v1');
@@ -25,8 +32,19 @@ async function bootstrap() {
     credentials: true,
   });
 
+  await app.init();
+  cachedApp = app;
+  return app;
+}
+
+async function bootstrap() {
+  const app = await createApp();
+  const config = app.get(ConfigService);
   const port = Number(config.get<string>('PORT') ?? 3001);
   await app.listen(port);
   console.log(`Hunterrd API running on http://localhost:${port}/${config.get<string>('API_PREFIX') ?? 'api/v1'}`);
 }
-bootstrap();
+
+if (require.main === module) {
+  bootstrap();
+}

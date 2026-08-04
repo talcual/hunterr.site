@@ -57,22 +57,42 @@ hunterrd/
 └── README.md
 ```
 
-## Despliegue en Vercel (frontend)
+## Despliegue en Vercel
 
-**Importante**: configura **un solo proyecto en Vercel** apuntando al frontend. Si ya tienes un segundo proyecto que apunta a la raíz del repo, **bórralo** — la API NestJS no se deploya en Vercel.
+Este monorepo se deploya como **dos proyectos separados en Vercel**, ambos apuntando al mismo repo de GitHub pero con distintos Root Directories.
 
-Configuración del proyecto frontend en Vercel:
+### Proyecto 1 — Frontend (apps/web)
 
 - **Root Directory**: `apps/web`
-- **Framework Preset**: Vite (lo auto-detecta con el `vercel.json` que está en `apps/web`)
-- **Build Command**: dejar vacío (lo detecta)
-- **Output Directory**: dejar vacío (lo detecta)
-- **Install Command**: dejar vacío
+- **Framework Preset**: Vite
+- **Build / Output / Install**: dejar los defaults (Vite los auto-detecta)
 
 Variables de entorno:
-- `VITE_API_BASE_URL` = `https://<tu-api>.onrender.com/api/v1` (la URL del backend desplegado en Railway/Render/Fly.io)
+- `VITE_API_BASE_URL` = `https://<tu-backend>.vercel.app/api/v1`
 
-> En el backend, configura `CORS_ORIGIN` con el dominio de Vercel (ej. `https://hunterrd.vercel.app`) y `NODE_ENV=production` para que las cookies se marquen `Secure`.
+### Proyecto 2 — Backend (apps/api)
+
+- **Root Directory**: `apps/api`
+- **Framework Preset**: Other
+- **Build Command**: `npm run vercel-build` (definido en `apps/api/vercel.json`)
+- **Output Directory**: `dist`
+- **Install Command**: `npm install`
+
+Variables de entorno (requeridas):
+- `DATABASE_URL` = `postgresql://...` (Vercel Postgres, Neon, Supabase, Railway, etc.)
+- `JWT_SECRET` = string aleatorio de 32+ chars
+- `JWT_EXPIRES_IN` = `7d`
+- `CORS_ORIGIN` = `https://<tu-frontend>.vercel.app` (dominio del proyecto 1)
+- `API_PREFIX` = `api/v1`
+- `NODE_ENV` = `production`
+
+> **Importante**: ejecuta las migraciones de Prisma antes del primer deploy. La forma más fácil es usar **Vercel Postgres** o **Neon** y correr `npx prisma migrate deploy` localmente apuntando a esa DB. Para automatizarlo en Vercel, puedes añadir un `prebuild` que corra `prisma migrate deploy` (cuidado con locks en deploys concurrentes).
+
+> El endpoint serverless vive en `apps/api/api/index.ts` y maneja todas las rutas bajo `/api/v1/*`. El `vercel.json` del backend configura `buildCommand`, `outputDirectory` y la función serverless con `maxDuration: 30s` y `memory: 1024MB`.
+
+### Alternativa más simple para el backend
+
+Si la configuración serverless te da problemas, deploya el backend en **Railway**, **Render** o **Fly.io** sin cambios. Vercel solo para el frontend, y `VITE_API_BASE_URL` apuntando a la URL del servicio externo.
 
 ## Scripts útiles
 
