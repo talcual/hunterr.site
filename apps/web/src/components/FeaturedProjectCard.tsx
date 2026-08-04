@@ -1,0 +1,56 @@
+import { Link } from 'react-router-dom';
+import type { ProductListItem } from '../lib/api';
+
+const grad = ['from-purple-500 to-purple-700', 'from-emerald-500 to-emerald-700', 'from-sky-500 to-sky-700', 'from-pink-500 to-pink-700'];
+
+interface Props {
+  product: ProductListItem;
+  badge?: string;
+  categoryLabel?: string;
+  description?: string;
+}
+
+export default function FeaturedProjectCard({ product, badge, categoryLabel, description }: Props) {
+  const initials = product.name.split(' ').slice(0, 2).map((w) => w[0]).join('').toUpperCase();
+  const g = grad[product.name.charCodeAt(0) % grad.length];
+
+  return (
+    <Link to={`/products/${product.id}`} className="group block overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-card transition-shadow hover:shadow-card-hover">
+      <div className={`relative h-40 bg-gradient-to-br ${g}`}>
+        {product.logoUrl ? (
+          <img src={product.logoUrl} alt={product.name} className="h-full w-full object-cover" />
+        ) : (
+          <div className="flex h-full items-center justify-center">
+            <span className="text-5xl font-extrabold text-white/90">{initials}</span>
+          </div>
+        )}
+        {badge && <span className="absolute left-3 top-3 rounded-full bg-white/90 px-2.5 py-0.5 text-[11px] font-bold text-slate-800 shadow-sm">{badge}</span>}
+        {categoryLabel && <span className="absolute right-3 top-3 rounded-full bg-white/20 px-2.5 py-0.5 text-[11px] font-semibold text-white backdrop-blur">{categoryLabel}</span>}
+        <div className="absolute inset-0 flex items-end justify-center pb-3 opacity-0 transition-opacity group-hover:opacity-100">
+          <div className="rounded-lg bg-white/95 px-3 py-1 text-xs font-semibold text-slate-700">Ver proyecto →</div>
+        </div>
+      </div>
+      <div className="p-4">
+        <div className="flex items-center justify-between gap-2">
+          <h3 className="truncate text-base font-bold text-slate-900">{product.name}</h3>
+          {product.category && (
+            <span className="rounded-full px-2.5 py-1 text-xs font-medium" style={{ backgroundColor: `${product.category.color}1a`, color: product.category.color }}>
+              {product.category.name}
+            </span>
+          )}
+        </div>
+        <p className="mt-1 line-clamp-1 text-sm text-slate-500">{description ?? product.tagline}</p>
+        <div className="mt-3 flex items-center gap-4 text-sm text-slate-500">
+          <span className="flex items-center gap-1 font-semibold text-slate-700">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m18 15-6-6-6 6"/></svg>
+            {product._count.votes}
+          </span>
+          <span className="flex items-center gap-1">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            {product._count.comments}
+          </span>
+        </div>
+      </div>
+    </Link>
+  );
+}

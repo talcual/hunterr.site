@@ -16,8 +16,12 @@ async function bootstrap() {
       transformOptions: { enableImplicitConversion: true },
     }),
   );
+
+  const origins = (config.get<string>('CORS_ORIGIN') ?? 'http://localhost:4321')
+    .split(',')
+    .map((s) => s.trim());
   app.enableCors({
-    origin: config.get<string>('CORS_ORIGIN')?.split(',') ?? true,
+    origin: origins,
     credentials: true,
   });
 

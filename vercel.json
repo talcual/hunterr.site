@@ -1,6 +1,0 @@
-{
-  "buildCommand": "bash apps/web/build.sh",
-  "outputDirectory": "dist",
-  "installCommand": "bash apps/web/install.sh",
-  "framework": null
-}

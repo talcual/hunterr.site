@@ -23,6 +23,7 @@ export class UsersService {
         username: true,
         bio: true,
         avatarUrl: true,
+        institution: true,
         createdAt: true,
         _count: { select: { products: true, votes: true } },
       },
@@ -37,6 +38,7 @@ export class UsersService {
         username: true,
         bio: true,
         avatarUrl: true,
+        institution: true,
         createdAt: true,
         products: {
           orderBy: { createdAt: 'desc' },
@@ -55,10 +57,10 @@ export class UsersService {
     return user;
   }
 
-  create(data: { email: string; username: string; passwordHash: string }) {
+  create(data: { email: string; username: string; passwordHash: string; institution?: string }) {
     return this.prisma.user.create({
       data,
-      select: { id: true, email: true, username: true, createdAt: true },
+      select: { id: true, email: true, username: true, institution: true, createdAt: true },
     });
   }
 
@@ -66,7 +68,7 @@ export class UsersService {
     return this.prisma.user.update({
       where: { id },
       data: dto,
-      select: { id: true, email: true, username: true, bio: true, avatarUrl: true },
+      select: { id: true, email: true, username: true, bio: true, avatarUrl: true, institution: true },
     });
   }
 }

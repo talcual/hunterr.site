@@ -1,5 +1,6 @@
 import { ConflictException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import type { Response } from 'express';
 import * as bcrypt from 'bcrypt';
 import { UsersService } from '../users/users.service';
 import { RegisterDto, LoginDto } from './dto/auth.dto';
@@ -10,12 +11,28 @@ export interface JwtPayload {
   username: string;
 }
 
+export const ACCESS_TOKEN_COOKIE = 'hunterrd_token';
+
 @Injectable()
 export class AuthService {
   constructor(
     private readonly users: UsersService,
     private readonly jwt: JwtService,
   ) {}
+
+  static setAuthCookie(res: Response, token: string) {
+    res.cookie(ACCESS_TOKEN_COOKIE, token, {
+      httpOnly: true,
+      sameSite: 'lax',
+      path: '/',
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+  }
+
+  static clearAuthCookie(res: Response) {
+    res.clearCookie(ACCESS_TOKEN_COOKIE, { path: '/' });
+  }
 
   async register(dto: RegisterDto) {
     const existingEmail = await this.users.findByEmail(dto.email);
@@ -29,6 +46,7 @@ export class AuthService {
       email: dto.email,
       username: dto.username,
       passwordHash,
+      institution: dto.institution,
     });
     return this.signTokenFor(user);
   }

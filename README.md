@@ -2,15 +2,16 @@
 
 **Hunterrd** es un portal tipo Product Hunt para descubrir, votar y compartir los mejores proyectos creados por estudiantes de todo el mundo. Diseño inspirado en DevTop — vitrina de talento estudiantil.
 
-- `apps/api` — Backend **NestJS 10** + **Prisma** + **PostgreSQL** (auth JWT)
-- `apps/web` — Frontend **Astro 4** (SSR) + **Tailwind CSS** con la paleta/páginas de DevTop
+- `apps/api` — Backend **NestJS 10** + **Prisma** + **PostgreSQL** (auth JWT con cookies httpOnly)
+- `apps/web` — Frontend **React 18** + **Vite** + **Tailwind CSS** + **React Router v6**
 
 ## Características
 
 - Hero con cards apiladas, sección **Top del día** con sidebar (categorías, top semanal, CTA), **Proyectos destacados** en 3 columnas, **Cómo funciona** en 3 pasos, testimonio y footer ink con newsletter.
-- Auth email/password (JWT + bcrypt), perfil de usuario con bio + institución.
+- Auth email/password (JWT + bcrypt) con **cookies httpOnly** y CORS `credentials: true` — el front React nunca toca el token.
 - Productos con `name`, `tagline`, `description`, `url`, `logoUrl`, `techStack[]`, `category`.
-- Votos (toggle, únicos por usuario), comentarios, ranking semanal, búsqueda por texto y filtrado por categoría.
+- Votos (toggle, únicos por usuario), comentarios, ranking, búsqueda y filtrado por categoría.
+- Perfil de usuario con bio + institución.
 
 ## Requisitos
 
@@ -21,23 +22,16 @@
 ## Setup rápido
 
 ```bash
-# 1. Instalar dependencias del monorepo
 npm install
-
-# 2. Configurar variables de entorno
 cp apps/api/.env.example apps/api/.env
 cp apps/web/.env.example apps/web/.env
-# edita apps/api/.env con tu DATABASE_URL y JWT_SECRET
-
-# 3. Crear DB y aplicar esquema Prisma
+# editar apps/api/.env (DATABASE_URL + JWT_SECRET)
 npm run prisma:migrate -- --name init
-
-# 4. Levantar API + Web en paralelo
 npm run dev
 ```
 
-- API: http://localhost:3001/api/v1
-- Web: http://localhost:4321
+- API → http://localhost:3001/api/v1
+- Web → http://localhost:4321 (Vite con proxy a la API)
 
 ## Estructura
 
@@ -47,36 +41,36 @@ hunterrd/
 │   ├── api/          # NestJS
 │   │   ├── prisma/   # schema.prisma
 │   │   └── src/
-│   │       ├── auth/         # JWT + bcrypt
+│   │       ├── auth/         # JWT + bcrypt + cookie httpOnly
 │   │       ├── users/
-│   │       ├── products/     # CRUD de productos
+│   │       ├── products/     # CRUD de proyectos
 │   │       ├── categories/
 │   │       ├── votes/        # upvotes
 │   │       └── comments/
-│   └── web/          # Astro
+│   └── web/          # React + Vite
 │       └── src/
-│           ├── components/
-│           ├── layouts/
-│           ├── pages/
-│           └── lib/          # cliente API + helpers
-└── package.json      # workspace root
+│           ├── components/   # Navbar, Footer, ProductRow, etc.
+│           ├── context/      # AuthContext
+│           ├── lib/          # cliente API
+│           └── pages/        # Home, Login, Register, Submit, ProductDetail, Categories, Profile, About, NotFound
+├── package.json
+└── README.md
 ```
 
-## Despliegue en Vercel
+## Despliegue en Vercel (frontend)
 
-El frontend está listo para Vercel con `@astrojs/vercel@7.8.2`. La config vive en `vercel.json` (raíz del repo):
+Vercel detecta Vite automáticamente. Configura el proyecto:
 
-- **Root Directory**: `.` (raíz del monorepo)
-- **Build Command**: `npm run build:web` (definido en `vercel.json`)
-- **Output Directory**: `apps/web/dist` (definido en `vercel.json`)
-- **Install Command**: `npm install --include=dev` (definido en `vercel.json`)
-- **Framework Preset**: Other
+- **Root Directory**: `apps/web`
+- **Framework Preset**: Other (o Vite)
+- **Build Command**: `npm run build` (deja el default)
+- **Output Directory**: `dist`
+- **Install Command**: `npm install`
 
-Variables de entorno en Vercel (Project Settings → Environment Variables):
+Variables de entorno:
+- `VITE_API_BASE_URL` = `https://<tu-api>.onrender.com/api/v1` (la URL del backend)
 
-- `PUBLIC_API_BASE_URL` = `https://<tu-api>.onrender.com/api/v1` o tu URL del backend
-
-> La API NestJS no se despliega en Vercel; usa Railway, Render, Fly.io, etc. y expón `DATABASE_URL` + `JWT_SECRET`.
+> La API NestJS no se despliega en Vercel; usa Railway, Render, Fly.io, etc. y expone `DATABASE_URL` + `JWT_SECRET`. En el backend, configura `CORS_ORIGIN` con el dominio de Vercel (ej. `https://hunterrd.vercel.app`).
 
 ## Scripts útiles
 
@@ -84,14 +78,14 @@ Variables de entorno en Vercel (Project Settings → Environment Variables):
 | ------------------------ | ------------------------------------------ |
 | `npm run dev`            | API + Web en paralelo                      |
 | `npm run dev:api`        | Solo NestJS                                |
-| `npm run dev:web`        | Solo Astro                                 |
+| `npm run dev:web`        | Solo Vite/React                            |
 | `npm run build`          | Build de ambos                             |
 | `npm run prisma:studio`  | GUI para inspeccionar la DB                |
 
 ## Modelo de datos (resumen)
 
-- **User**: id, email, username, passwordHash, avatarUrl, createdAt
+- **User**: id, email, username, passwordHash, bio, avatarUrl, institution, createdAt
 - **Category**: id, name, slug, color
-- **Product**: id, name, tagline, description, url, logoUrl, hunterId, categoryId, createdAt
+- **Product**: id, name, tagline, description, url, logoUrl, techStack[], hunterId, categoryId, createdAt
 - **Vote**: (userId, productId) — upvote
 - **Comment**: id, productId, userId, body, createdAt

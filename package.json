@@ -2,10 +2,8 @@
   "name": "hunterrd",
   "version": "0.1.0",
   "private": true,
-  "description": "Hunterrd — portal tipo Product Hunt. Monorepo con NestJS (API) y Astro (Web).",
-  "workspaces": [
-    "apps/*"
-  ],
+  "description": "Hunterrd — portal tipo Product Hunt para proyectos estudiantiles.",
+  "workspaces": ["apps/*"],
   "scripts": {
     "dev": "npm-run-all --parallel dev:api dev:web",
     "dev:api": "npm run start:dev --workspace=@hunterrd/api",
