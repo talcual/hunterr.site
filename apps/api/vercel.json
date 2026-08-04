@@ -1,0 +1,4 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "echo 'Backend does not deploy on Vercel. Use Railway, Render, or Fly.io.' && exit 1"
+}
