@@ -62,6 +62,22 @@ hunterrd/
 └── package.json      # workspace root
 ```
 
+## Despliegue en Vercel
+
+El frontend está listo para Vercel con `@astrojs/vercel`. Configura el proyecto con:
+
+- **Root Directory**: `apps/web`
+- **Build Command**: `npm run build`
+- **Output Directory**: dejar vacío (lo detecta el adapter)
+- **Install Command**: `npm install`
+- **Framework Preset**: Other
+
+Variables de entorno en Vercel (Project Settings → Environment Variables):
+
+- `PUBLIC_API_BASE_URL` = `https://<tu-api>.onrender.com/api/v1` o tu URL del backend
+
+> La API NestJS no se despliega en Vercel; usa Railway, Render, Fly.io, etc. y expón `POSTGRES_URL` + `JWT_SECRET`.
+
 ## Scripts útiles
 
 | Comando                  | Descripción                                |
