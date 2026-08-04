@@ -94,11 +94,12 @@ export const api = {
   logout: () => request<{ ok: true }>('/auth/logout', { method: 'POST' }),
   me: () => request<AuthUser>('/auth/me'),
 
-  listProducts: (params: { sort?: 'new' | 'top' | 'trending'; category?: string; page?: number; search?: string } = {}) => {
+  listProducts: (params: { sort?: 'new' | 'top' | 'trending'; category?: string; page?: number; limit?: number; search?: string } = {}) => {
     const qs = new URLSearchParams();
     if (params.sort) qs.set('sort', params.sort);
     if (params.category) qs.set('category', params.category);
     if (params.page) qs.set('page', String(params.page));
+    if (params.limit) qs.set('limit', String(params.limit));
     if (params.search) qs.set('search', params.search);
     return request<ProductsListResponse>(`/products?${qs.toString()}`);
   },
