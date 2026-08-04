@@ -1,0 +1,54 @@
+---
+interface Props {
+  user?: { id: string; username: string } | null;
+}
+const { user = null } = Astro.props;
+const path = Astro.url.pathname;
+const link = (href: string) =>
+  `text-sm font-medium transition-colors ${path === href || (href !== '/' && path.startsWith(href)) ? 'text-ink-900' : 'text-slate-600 hover:text-ink-900'}`;
+---
+<header class="sticky top-0 z-30 border-b border-slate-200/80 bg-white/80 backdrop-blur">
+  <div class="mx-auto flex max-w-7xl items-center gap-6 px-4 py-3">
+    <a href="/" class="flex items-center gap-2 text-slate-900">
+      <span class="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-purple-500 to-purple-700 text-white shadow-sm">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/>
+          <path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/>
+          <path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/>
+          <path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/>
+        </svg>
+      </span>
+      <span class="text-lg font-extrabold tracking-tight">hunterrd<span class="text-purple-500">.</span></span>
+    </a>
+
+    <nav class="hidden gap-6 md:flex">
+      <a href="/" class={`${link('/')} flex items-center gap-1`}>
+        Descubrir
+        <span class="h-1 w-1 rounded-full bg-purple-500"></span>
+      </a>
+      <a href="/#top" class={link('/')}>Proyectos</a>
+      <a href="/#rankings" class={link('/')}>Rankings</a>
+      <a href="/about" class={link('/about')}>Sobre</a>
+    </nav>
+
+    <div class="ml-auto flex items-center gap-2">
+      <label class="hidden md:flex items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-sm text-slate-500 focus-within:border-purple-400">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        <input type="search" placeholder="Buscar proyectos..." class="w-40 bg-transparent text-sm outline-none" />
+      </label>
+      {user ? (
+        <>
+          <a href="/submit" class="btn-outline hidden sm:inline-flex">Publicar proyecto</a>
+          <a href={`/u/${user.username}`} class="flex h-9 w-9 items-center justify-center rounded-full bg-purple-100 text-sm font-bold text-purple-700">
+            {user.username.slice(0, 2).toUpperCase()}
+          </a>
+        </>
+      ) : (
+        <>
+          <a href="/login" class="btn-outline hidden sm:inline-flex">Iniciar sesión</a>
+          <a href="/register" class="btn-primary">Publicar proyecto <span class="opacity-70">+</span></a>
+        </>
+      )}
+    </div>
+  </div>
+</header>

@@ -1,0 +1,26 @@
+{
+  "name": "hunterrd",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Hunterrd — portal tipo Product Hunt. Monorepo con NestJS (API) y Astro (Web).",
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "npm-run-all --parallel dev:api dev:web",
+    "dev:api": "npm run start:dev --workspace=@hunterrd/api",
+    "dev:web": "npm run dev --workspace=@hunterrd/web",
+    "build": "npm-run-all build:api build:web",
+    "build:api": "npm run build --workspace=@hunterrd/api",
+    "build:web": "npm run build --workspace=@hunterrd/web",
+    "prisma:generate": "npm run prisma:generate --workspace=@hunterrd/api",
+    "prisma:migrate": "npm run prisma:migrate --workspace=@hunterrd/api",
+    "prisma:studio": "npm run prisma:studio --workspace=@hunterrd/api"
+  },
+  "devDependencies": {
+    "npm-run-all": "^4.1.5"
+  },
+  "engines": {
+    "node": ">=18.18.0"
+  }
+}

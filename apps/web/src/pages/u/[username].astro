@@ -1,0 +1,91 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ProductRow from '../../components/ProductRow.astro';
+import { api } from '../../lib/api';
+import { getToken } from '../../lib/auth';
+
+const token = getToken(Astro);
+let me = null;
+if (token) { try { me = await api.me(token); } catch {} }
+
+const { username } = Astro.params;
+if (!username) return Astro.redirect('/');
+
+let profile: any = null;
+try {
+  const res = await fetch(`${import.meta.env.PUBLIC_API_BASE_URL || 'http://localhost:3001/api/v1'}/users/${username}`);
+  if (!res.ok) throw new Error('not found');
+  profile = await res.json();
+} catch {}
+
+const initials = (profile?.username ?? '?').slice(0, 2).toUpperCase();
+---
+<BaseLayout title={profile ? `@${profile.username} · hunterrd` : 'Perfil · hunterrd'} user={me}>
+  <section class="mx-auto max-w-5xl px-4 py-10">
+    {!profile ? (
+      <div class="rounded-2xl border border-slate-200 bg-white p-10 text-center shadow-card">
+        <h1 class="text-2xl font-extrabold text-slate-900">Usuario no encontrado</h1>
+        <a href="/" class="btn-primary mt-6">Volver</a>
+      </div>
+    ) : (
+      <div class="space-y-8">
+        <header class="rounded-2xl border border-slate-200 bg-white p-6 shadow-card">
+          <div class="flex flex-wrap items-center gap-5">
+            <div class="flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-purple-400 to-purple-600 text-2xl font-extrabold text-white">
+              {profile.avatarUrl ? <img src={profile.avatarUrl} class="h-full w-full rounded-full object-cover" /> : initials}
+            </div>
+            <div class="flex-1">
+              <h1 class="text-2xl font-extrabold text-slate-900">@{profile.username}</h1>
+              {profile.bio && <p class="mt-1 text-slate-600">{profile.bio}</p>}
+              {profile.institution && <p class="mt-1 text-sm text-slate-500">🎓 {profile.institution}</p>}
+              <p class="mt-1 text-xs text-slate-400">Se unió en {new Date(profile.createdAt).toLocaleDateString('es')}</p>
+            </div>
+          </div>
+        </header>
+
+        <section>
+          <h2 class="mb-4 text-lg font-bold text-slate-900">Proyectos publicados ({profile.products?.length ?? 0})</h2>
+          {profile.products?.length ? (
+            <div class="space-y-3">
+              {profile.products.map((p: any) => (
+                <ProductRow
+                  product={{
+                    ...p,
+                    hunter: { id: profile.id, username: profile.username, avatarUrl: profile.avatarUrl },
+                    category: null,
+                  }}
+                />
+              ))}
+            </div>
+          ) : (
+            <div class="rounded-2xl border border-dashed border-slate-300 bg-white p-8 text-center text-sm text-slate-500">Aún no ha publicado proyectos.</div>
+          )}
+        </section>
+      </div>
+    )}
+  </section>
+</BaseLayout>
+
+<script>
+  document.addEventListener('click', async (e) => {
+    const btn = (e.target as HTMLElement).closest('[data-vote-btn]') as HTMLButtonElement | null;
+    if (!btn) return;
+    e.preventDefault();
+    const id = btn.dataset.productId;
+    const token = document.cookie.match(/(?:^|;\s*)hunterrd_token=([^;]+)/)?.[1];
+    if (!token) { window.location.href = '/login?next=' + encodeURIComponent(window.location.pathname); return; }
+    btn.disabled = true;
+    try {
+      const res = await fetch(`/api/v1/votes/${id}/toggle`, { method: 'POST', headers: { Authorization: `Bearer ${token}` } });
+      if (!res.ok) throw new Error();
+      const data = await res.json();
+      const countEl = btn.parentElement?.querySelector('[data-vote-count]');
+      if (countEl) {
+        const current = parseInt(countEl.textContent || '0', 10);
+        countEl.textContent = String(current + (data.voted ? 1 : -1));
+      }
+      btn.classList.toggle('text-purple-500', data.voted);
+      btn.classList.toggle('border-purple-400', data.voted);
+    } catch { alert('No se pudo registrar el voto'); } finally { btn.disabled = false; }
+  });
+</script>

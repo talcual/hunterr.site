@@ -1,0 +1,34 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import StepCard from '../components/StepCard.astro';
+import { getToken } from '../lib/auth';
+import { api } from '../lib/api';
+
+const token = getToken(Astro);
+let user = null;
+if (token) { try { user = (await api.me(token)); } catch {} }
+const steps = [
+  { icon: 'upload' as const, title: 'Publica tu proyecto', description: 'Comparte tu idea, demo, capturas y tecnologías usadas.' },
+  { icon: 'vote' as const, title: 'Recibe votos y feedback', description: 'La comunidad descubre, prueba y apoya tus proyectos.' },
+  { icon: 'trophy' as const, title: 'Gana visibilidad', description: 'Haz que tu talento llegue a empresas, inversionistas y al mundo.' },
+];
+---
+<BaseLayout title="Sobre · hunterrd" user={user}>
+  <section class="mx-auto max-w-3xl px-4 py-16">
+    <h1 class="text-3xl font-extrabold text-slate-900 md:text-4xl">Sobre hunterrd</h1>
+    <p class="mt-3 text-lg text-slate-600">
+      hunterrd es la vitrina donde el talento estudiantil se hace visible. Publica tus proyectos, recibe feedback de la comunidad y conecta con oportunidades reales.
+    </p>
+
+    <h2 class="mt-10 text-xl font-bold text-slate-900">Cómo funciona</h2>
+    <div class="mt-4 grid gap-4 md:grid-cols-3">
+      {steps.map((s, i) => <StepCard number={i + 1} {...s} />)}
+    </div>
+
+    <h2 class="mt-10 text-xl font-bold text-slate-900">Stack técnico</h2>
+    <ul class="mt-3 list-inside list-disc text-slate-600">
+      <li>API: NestJS 10, Prisma 5, PostgreSQL 14, JWT auth, bcrypt</li>
+      <li>Web: Astro 4 (SSR), Tailwind CSS, server endpoints para formularios</li>
+    </ul>
+  </section>
+</BaseLayout>

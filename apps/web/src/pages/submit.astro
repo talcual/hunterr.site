@@ -1,0 +1,64 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { api, type Category } from '../lib/api';
+import { getToken } from '../lib/auth';
+
+const token = getToken(Astro);
+let user = null;
+if (token) { try { user = (await api.me(token)); } catch {} }
+if (!user) return Astro.redirect('/login?next=/submit');
+
+const error = Astro.url.searchParams.get('error');
+let categories: Category[] = [];
+try { categories = await api.listCategories(); } catch {}
+---
+<BaseLayout title="Publicar proyecto · hunterrd" user={user}>
+  <div class="mx-auto max-w-2xl py-12">
+    <h1 class="text-3xl font-extrabold text-slate-900">Publicar un proyecto</h1>
+    <p class="mt-2 text-sm text-slate-500">Compártelo con miles de estudiantes y curiosos.</p>
+
+    <div class="mt-8 rounded-2xl border border-slate-200 bg-white p-6 shadow-card">
+      {error && <div class="mb-4 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">{error}</div>}
+
+      <form method="POST" action="/api/submit" class="space-y-4">
+        <div>
+          <label class="label" for="name">Nombre del proyecto</label>
+          <input class="input" id="name" name="name" type="text" required minlength="2" maxlength="80" />
+        </div>
+        <div>
+          <label class="label" for="tagline">Tagline</label>
+          <input class="input" id="tagline" name="tagline" type="text" required minlength="10" maxlength="140" placeholder="Una frase que lo explique" />
+        </div>
+        <div>
+          <label class="label" for="description">Descripción</label>
+          <textarea class="input" id="description" name="description" rows="6" maxlength="8000"></textarea>
+        </div>
+        <div class="grid gap-4 md:grid-cols-2">
+          <div>
+            <label class="label" for="url">URL del proyecto</label>
+            <input class="input" id="url" name="url" type="url" placeholder="https://" />
+          </div>
+          <div>
+            <label class="label" for="logoUrl">Logo URL</label>
+            <input class="input" id="logoUrl" name="logoUrl" type="url" placeholder="https://" />
+          </div>
+        </div>
+        <div>
+          <label class="label" for="tech">Tecnologías (separadas por coma)</label>
+          <input class="input" id="tech" name="techStack" type="text" placeholder="React, Node.js, IA" />
+        </div>
+        <div>
+          <label class="label" for="categoryId">Categoría</label>
+          <select class="input" id="categoryId" name="categoryId">
+            <option value="">— Sin categoría —</option>
+            {categories.map((c) => <option value={c.id}>{c.name}</option>)}
+          </select>
+        </div>
+        <div class="flex justify-end gap-2 pt-2">
+          <a href="/" class="btn-ghost">Cancelar</a>
+          <button type="submit" class="btn-primary">Publicar proyecto</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</BaseLayout>
