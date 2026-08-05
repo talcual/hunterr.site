@@ -209,34 +209,6 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-4 pb-16">
-        <div className="relative overflow-hidden rounded-3xl bg-purple-50 p-8 md:p-12">
-          <span className="absolute left-6 top-6 text-6xl font-serif text-purple-300/70">"</span>
-          <div className="relative grid items-center gap-8 md:grid-cols-[1fr_auto]">
-            <div>
-              <p className="text-lg font-medium text-slate-800 md:text-xl">
-                "hunterrd me ayudó a que mi proyecto de clase se hiciera viral. Hoy trabajo en una startup gracias a la visibilidad que obtuve."
-              </p>
-              <div className="mt-5 flex items-center gap-3">
-                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-purple-400 to-purple-600 text-sm font-bold text-white">CR</div>
-                <div>
-                  <p className="font-semibold text-slate-900">Camila Rodríguez</p>
-                  <p className="text-sm text-slate-500">Ex estudiante, ahora Product Designer</p>
-                </div>
-              </div>
-            </div>
-            <div className="hidden md:block">
-              <div className="rounded-2xl bg-white p-3 shadow-card">
-                <div className="grid h-32 w-56 grid-cols-6 grid-rows-4 gap-1">
-                  {Array.from({ length: 24 }).map((_, i) => (
-                    <div key={i} className={`rounded-sm ${['bg-purple-200', 'bg-purple-300', 'bg-purple-400', 'bg-purple-500'][i % 4]}`} style={{ opacity: 0.3 + ((i * 13) % 70) / 100 }}></div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
     </>
   );
 }
