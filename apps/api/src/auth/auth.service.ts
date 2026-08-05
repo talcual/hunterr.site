@@ -21,17 +21,23 @@ export class AuthService {
   ) {}
 
   static setAuthCookie(res: Response, token: string) {
+    const isProduction = process.env.NODE_ENV === 'production';
     res.cookie(ACCESS_TOKEN_COOKIE, token, {
       httpOnly: true,
-      sameSite: 'lax',
+      sameSite: isProduction ? 'none' : 'lax',
       path: '/',
-      secure: process.env.NODE_ENV === 'production',
+      secure: isProduction,
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
   }
 
   static clearAuthCookie(res: Response) {
-    res.clearCookie(ACCESS_TOKEN_COOKIE, { path: '/' });
+    const isProduction = process.env.NODE_ENV === 'production';
+    res.clearCookie(ACCESS_TOKEN_COOKIE, {
+      path: '/',
+      sameSite: isProduction ? 'none' : 'lax',
+      secure: isProduction,
+    });
   }
 
   async register(dto: RegisterDto) {

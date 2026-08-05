@@ -25,11 +25,39 @@ export async function createApp(): Promise<NestExpressApplication> {
     }),
   );
 
-  const origins = (config.get<string>('CORS_ORIGIN') ?? 'http://localhost:4321')
+  const rawCorsOrigin = config.get<string>('CORS_ORIGIN');
+  const allowSubdomains = config.get<string>('CORS_ALLOW_SUBDOMAINS') !== 'false';
+  const origins = (rawCorsOrigin ?? 'http://localhost:4321')
     .split(',')
     .map((s) => s.trim());
+
   app.enableCors({
-    origin: origins,
+    origin: (origin, callback) => {
+      if (!origin) return callback(null, true);
+
+      const exactMatch = origins.includes(origin);
+      if (exactMatch) return callback(null, true);
+
+      if (allowSubdomains) {
+        for (const allowed of origins) {
+          try {
+            const allowedUrl = new URL(allowed);
+            const allowedHost = allowedUrl.hostname;
+            const originHost = new URL(origin).hostname;
+            if (
+              originHost === allowedHost ||
+              originHost.endsWith('.' + allowedHost)
+            ) {
+              return callback(null, true);
+            }
+          } catch {
+            continue;
+          }
+        }
+      }
+
+      callback(new Error('Not allowed by CORS'), false);
+    },
     credentials: true,
   });
 
