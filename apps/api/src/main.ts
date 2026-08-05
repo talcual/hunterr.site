@@ -3,6 +3,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { ConfigService } from '@nestjs/config';
 import type { NestExpressApplication } from '@nestjs/platform-express';
+import cookieParser from 'cookie-parser';
 import { AppModule } from './app.module';
 
 let cachedApp: NestExpressApplication | null = null;
@@ -14,6 +15,8 @@ export async function createApp(): Promise<NestExpressApplication> {
     logger: ['error', 'warn', 'log'],
   });
   const config = app.get(ConfigService);
+
+  app.use(cookieParser());
 
   app.setGlobalPrefix(config.get<string>('API_PREFIX') ?? 'api/v1');
   app.useGlobalPipes(
