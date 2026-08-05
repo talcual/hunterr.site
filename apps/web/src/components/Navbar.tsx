@@ -26,7 +26,7 @@ export default function Navbar() {
               <path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/>
             </svg>
           </span>
-          <span className="text-lg font-extrabold tracking-tight">hunterrd<span className="text-purple-500">.</span></span>
+          <span className="text-lg font-extrabold tracking-tight">eMakers<span className="text-purple-500">.</span></span>
         </Link>
 
         <nav className="hidden gap-6 md:flex">
