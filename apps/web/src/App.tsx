@@ -10,10 +10,13 @@ import Categories from './pages/Categories';
 import Profile from './pages/Profile';
 import About from './pages/About';
 import NotFound from './pages/NotFound';
+import { Analytics } from '@vercel/analytics/react';
+
 
 export default function App() {
   return (
     <div className="min-h-screen flex flex-col bg-white">
+      <Analytics />
       <Navbar />
       <main className="flex-1">
         <Routes>
