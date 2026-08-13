@@ -72,9 +72,9 @@ export default function Home() {
               <Link to="/submit" className="btn-outline border-white/30 bg-white/5 text-white hover:bg-white/10">Publicar mi proyecto</Link>
             </div>
             <div className="mt-10 grid grid-cols-3 gap-6 border-t border-white/10 pt-6 text-sm">
-              <div><p className="text-2xl font-extrabold text-white">1.2K</p><p className="text-slate-400">Proyectos publicados</p></div>
+              {/* <div><p className="text-2xl font-extrabold text-white">1.2K</p><p className="text-slate-400">Proyectos publicados</p></div>
               <div><p className="text-2xl font-extrabold text-white">28K</p><p className="text-slate-400">Votos de la comunidad</p></div>
-              <div><p className="text-2xl font-extrabold text-white">150+</p><p className="text-slate-400">Instituciones</p></div>
+              <div><p className="text-2xl font-extrabold text-white">150+</p><p className="text-slate-400">Instituciones</p></div> */}
             </div>
           </div>
 
